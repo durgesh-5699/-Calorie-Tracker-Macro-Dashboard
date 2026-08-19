@@ -39,8 +39,10 @@ export default function App() {
     setScanning(true);
     try {
       const res = await axios.get(`${API_URL}/scan`);
-      setFoodName(res.data.name);
-      setWeight(res.data.weight);
+      setFoodName(res.data.name);   
+      setWeight(res.data.weight);   
+    } catch (err) {
+      console.error("Scan error: ", err);
     } finally {
       setScanning(false);
     }
@@ -116,7 +118,7 @@ export default function App() {
           />
           <button type="submit" className="btn-primary">Add Meal</button>
         </form>
-        <button className="btn-scan" onClick={handleScan} disabled={scanning}>
+        <button type="button" className="btn-scan" onClick={handleScan} disabled={scanning}>
           {scanning ? 'Scanning…' : '📸 Simulate AI Image Scanner'}
         </button>
       </div>

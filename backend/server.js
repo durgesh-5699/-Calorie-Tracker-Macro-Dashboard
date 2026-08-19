@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection (Make sure MongoDB is running locally or use Atlas URI)
-mongoose.connect('mongodb://127.0.0.1:27017/vibecoding', {
+mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 }).then(() => console.log("MongoDB Connected"))

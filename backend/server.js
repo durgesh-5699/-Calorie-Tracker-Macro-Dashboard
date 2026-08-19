@@ -1,4 +1,3 @@
-// backend/server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -34,7 +33,7 @@ const baseNutrients = { calories: 120, protein: 10, carbs: 15, fats: 5 };
 async function getDashboardState() {
     const meals = await Meal.find();
     let totalCalories = 0, totalProtein = 0, totalCarbs = 0, totalFats = 0;
-    
+
     meals.forEach(m => {
         totalCalories += m.calories;
         totalProtein += m.protein;
@@ -43,7 +42,7 @@ async function getDashboardState() {
     });
 
     const targets = goalThresholds[currentGoal];
-    const isExceeded = totalCalories > targets.calories; 
+    const isExceeded = totalCalories > targets.calories;
 
     return {
         meals,
@@ -59,6 +58,10 @@ app.get('/api/state', async (req, res) => {
     res.json(state);
 });
 
+app.get('/api/scan', (req, res) => {
+    res.json({ name: "AI Scanned Chicken Salad", weight: 250 });
+});
+
 app.post('/api/goal', async (req, res) => {
     currentGoal = req.body.goal;
     const state = await getDashboardState();
@@ -66,18 +69,12 @@ app.post('/api/goal', async (req, res) => {
 });
 
 app.post('/api/meals', async (req, res) => {
-    const { name, weight, isImageUpload } = req.body;
-    let finalName = name, finalWeight = weight;
+    const { name, weight } = req.body;
+    const scale = weight / 100;
 
-    if (isImageUpload) {
-        finalName = "AI Scanned Chicken Salad";
-        finalWeight = 250; 
-    }
-
-    const scale = finalWeight / 100;
     const newMeal = new Meal({
-        name: finalName,
-        weight: finalWeight,
+        name,
+        weight,
         calories: Math.round(baseNutrients.calories * scale),
         protein: Math.round(baseNutrients.protein * scale),
         carbs: Math.round(baseNutrients.carbs * scale),
